@@ -16,7 +16,8 @@
 <body>
     <div class="card">
         <h1>Formulaire de demande d'Autorisation Spéciale d'Absence</h1>
-        <form name="conges" data-netlify="true" method="POST">
+        <form name="conges" action="https://www.formbackend.com/f/60603d79a949427b" method="POST">
+            <input type="text" name="honeypot" style="display:none;">
             <div class="form-group">
                 <label>Nom complet:</label>
                 <input type="text" name="name" required>
@@ -51,6 +52,7 @@
                 <label>Motif:</label>
                 <textarea name="reason" rows="4"></textarea>
             </div>
+            <input type="hidden" name="_redirect" value="https://votre-site.com/confirmation.html">
             <button type="submit">Envoyer la demande</button>
         </form>
     </div>
