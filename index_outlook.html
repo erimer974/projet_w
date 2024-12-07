@@ -71,7 +71,7 @@
                 <label for="motif">Motif :</label>
                 <textarea id="motif" name="motif" rows="4" required></textarea>
             </div>
-            <button type="submit">Envoyer via Outlook</button>
+            <button type="submit">Envoyer la demande</button>
         </form>
     </div>
 
@@ -104,8 +104,8 @@ Motif: ${motif}
 Cordialement,
 ${from}`;
 
-            const outlookLink = `ms-outlook:/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = outlookLink;
+            const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
             return false;
         }
 
