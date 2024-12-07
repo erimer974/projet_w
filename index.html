@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -26,7 +27,7 @@
             font-weight: bold;
             color: #333;
         }
-        input, select {
+        input, textarea, select {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -34,7 +35,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        input:focus, select:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(76,175,80,0.2);
@@ -52,23 +53,25 @@
         button:hover {
             background-color: #45a049;
         }
-        .checkbox-group {
-            margin-bottom: 15px;
+        .client-select {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Demande de congés</h2>
-        <form id="congeForm" onsubmit="return sendEmail(event)">
-            <div class="form-group">
-                <label for="mailClient">Service mail :</label>
-                <select id="mailClient" required>
-                    <option value="">Sélectionnez votre service mail...</option>
-                    <option value="gmail">Gmail</option>
-                    <option value="outlook_local">Outlook Local</option>
-                </select>
-            </div>
+        
+        <div class="client-select">
+            <label for="mailClient">Service mail :</label>
+            <select id="mailClient" required>
+                <option value="">Sélectionnez votre service mail...</option>
+                <option value="gmail">Gmail</option>
+                <option value="outlook_local">Outlook Local</option>
+            </select>
+        </div>
+
+        <form id="congeForm" onsubmit="return confirmAndSend(event)">
             <div class="form-group">
                 <label for="from">Votre email :</label>
                 <input type="email" id="from" name="from" required placeholder="votre.email@exemple.com">
@@ -86,24 +89,21 @@
                 <input type="date" id="dateFin" name="dateFin" required>
             </div>
             <div class="form-group">
-                <label>Motif :</label>
-                <div class="checkbox-group">
-                    <label><input type="radio" name="motif" value="Congé payé" required> Congé payé</label>
-                    <label><input type="radio" name="motif" value="Congé sans solde"> Congé sans solde</label>
-                    <label><input type="radio" name="motif" value="Congé maladie"> Congé maladie</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="attachment">Joindre une pièce :</label>
-                <input type="file" id="attachment" name="attachment">
+                <label for="motif">Motif :</label>
+                <textarea id="motif" name="motif" rows="4" required placeholder="Détaillez le motif de votre demande de congés..."></textarea>
             </div>
             <button type="submit">Envoyer la demande</button>
         </form>
     </div>
 
     <script>
-        async function sendEmail(event) {
-            event.preventDefault();
+        function formatDate(dateString) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        function confirmAndSend(e) {
+            e.preventDefault();
             
             const mailClient = document.getElementById('mailClient').value;
             if (!mailClient) {
@@ -113,35 +113,26 @@
 
             const from = document.getElementById('from').value;
             const to = document.getElementById('to').value;
-            const dateDebut = document.getElementById('dateDebut').value;
-            const dateFin = document.getElementById('dateFin').value;
-            const motif = document.querySelector('input[name="motif"]:checked').value;
-            const attachment = document.getElementById('attachment').files[0];
+            const dateDebut = formatDate(document.getElementById('dateDebut').value);
+            const dateFin = formatDate(document.getElementById('dateFin').value);
+            const motif = document.getElementById('motif').value;
 
-            const formData = new FormData();
-            formData.append('from', from);
-            formData.append('to', to);
-            formData.append('subject', 'Demande de congés');
-            formData.append('body', `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nMotif: ${motif}\n\nCordialement,\n${from}`);
-            if (attachment) {
-                formData.append('attachment', attachment);
+            const subject = 'Demande de congés';
+            const body = `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nMotif: ${motif}\n\nCordialement,\n${from}`;
+
+            if (!confirm(`Confirmez-vous l'envoi de cet email ?\n\nSujet : ${subject}\n\n${body}`)) {
+                return false;
             }
 
-            try {
-                const response = await fetch('http://votre-serveur.local/api/send-email', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert('Demande envoyée avec succès.');
-                } else {
-                    alert('Une erreur est survenue lors de l\'envoi.');
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Impossible d\'envoyer la demande.');
+            if (mailClient === 'outlook_local') {
+                const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            } else if (mailClient === 'gmail') {
+                const gmailLink = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(gmailLink, '_blank');
             }
+
+            return false;
         }
 
         // Définir la date minimale comme aujourd'hui
