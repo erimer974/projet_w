@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Demande de congés</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Demande de congés</h2>
+    <form id="congeForm" onsubmit="return sendEmail(event)">
+        <div class="form-group">
+            <label for="from">Votre email :</label>
+            <input type="email" id="from" name="from" required>
+        </div>
+        <div class="form-group">
+            <label for="to">Email du destinataire :</label>
+            <input type="email" id="to" name="to" required>
+        </div>
+        <div class="form-group">
+            <label for="dateDebut">Date de début :</label>
+            <input type="date" id="dateDebut" name="dateDebut" required>
+        </div>
+        <div class="form-group">
+            <label for="dateFin">Date de fin :</label>
+            <input type="date" id="dateFin" name="dateFin" required>
+        </div>
+        <div class="form-group">
+            <label for="motif">Motif :</label>
+            <textarea id="motif" name="motif" rows="4" required></textarea>
+        </div>
+        <button type="submit">Envoyer la demande</button>
+    </form>
+
+    <script>
+        function sendEmail(e) {
+            e.preventDefault();
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+            const motif = document.getElementById('motif').value;
+
+            const subject = 'Demande de congés';
+            const body = `
+                De: ${from}
+                Date de début: ${dateDebut}
+                Date de fin: ${dateFin}
+                Motif: ${motif}
+            `;
+
+            window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            return false;
+        }
+    </script>
+</body>
+</html>
