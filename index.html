@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Demande de congés</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76,175,80,0.2);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .client-select {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Demande de congés</h2>
+        
+        <div class="client-select">
+            <label for="mailClient">Service mail :</label>
+            <select id="mailClient" required>
+                <option value="">Sélectionnez votre service mail...</option>
+                <option value="gmail">Gmail</option>
+                <option value="outlook_local">Outlook Local</option>
+            </select>
+        </div>
+
+        <form id="congeForm" onsubmit="return confirmAndSend(event)">
+            <div class="form-group">
+                <label for="from">Votre email :</label>
+                <input type="email" id="from" name="from" required placeholder="votre.email@exemple.com">
+            </div>
+            <div class="form-group">
+                <label for="to">Email du destinataire :</label>
+                <input type="email" id="to" name="to" required placeholder="destinataire@exemple.com">
+            </div>
+            <div class="form-group">
+                <label for="dateDebut">Date de début :</label>
+                <input type="date" id="dateDebut" name="dateDebut" required>
+            </div>
+            <div class="form-group">
+                <label for="dateFin">Date de fin :</label>
+                <input type="date" id="dateFin" name="dateFin" required>
+            </div>
+            <div class="form-group">
+                <label for="motif">Motif :</label>
+                <textarea id="motif" name="motif" rows="4" required placeholder="Détaillez le motif de votre demande de congés..."></textarea>
+            </div>
+            <button type="submit">Envoyer la demande</button>
+        </form>
+    </div>
+
+    <script>
+        function formatDate(dateString) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        function confirmAndSend(e) {
+            e.preventDefault();
+            
+            const mailClient = document.getElementById('mailClient').value;
+            if (!mailClient) {
+                alert('Veuillez sélectionner un service mail');
+                return false;
+            }
+
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const dateDebut = formatDate(document.getElementById('dateDebut').value);
+            const dateFin = formatDate(document.getElementById('dateFin').value);
+            const motif = document.getElementById('motif').value;
+
+            const subject = 'Demande de congés';
+            const body = `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nMotif: ${motif}\n\nCordialement,\n${from}`;
+
+            if (!confirm(`Confirmez-vous l'envoi de cet email ?\n\nSujet : ${subject}\n\n${body}`)) {
+                return false;
+            }
+
+            if (mailClient === 'outlook_local') {
+                const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            } else if (mailClient === 'gmail') {
+                const gmailLink = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(gmailLink, '_blank');
+            }
+
+            return false;
+        }
+
+        // Définir la date minimale comme aujourd'hui
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateDebut').min = today;
+        document.getElementById('dateFin').min = today;
+    </script>
+</body>
+</html>
