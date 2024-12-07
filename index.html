@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Demande de congés spéciaux</title>
+    <title>Demande de congés</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,22 +29,18 @@
             border: none;
             cursor: pointer;
         }
-        #mailClientSelect {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
     <h2>Demande de congés</h2>
     
-    <div id="mailClientSelect">
-        <label for="mailClient">Choisissez votre client mail :</label>
+    <div>
+        <label for="mailClient">Service mail :</label>
         <select id="mailClient" required>
             <option value="">Sélectionnez...</option>
-            <option value="outlook">Outlook</option>
-            <option value="thunderbird">Thunderbird</option>
-            <option value="gmail">Gmail (navigateur)</option>
-            <option value="default">Client mail par défaut</option>
+            <option value="gmail">Gmail</option>
+            <option value="outlook">Outlook Web</option>
+            <option value="yahoo">Yahoo Mail</option>
         </select>
     </div>
 
@@ -78,7 +74,7 @@
             
             const mailClient = document.getElementById('mailClient').value;
             if (!mailClient) {
-                alert('Veuillez sélectionner un client mail');
+                alert('Veuillez sélectionner un service mail');
                 return false;
             }
 
@@ -88,7 +84,7 @@
             const dateFin = document.getElementById('dateFin').value;
             const motif = document.getElementById('motif').value;
 
-            const subject = 'Demande de congés spéciaux';
+            const subject = 'Demande de congés';
             const body = `
                 De: ${from}
                 Date de début: ${dateDebut}
@@ -96,21 +92,13 @@
                 Motif: ${motif}
             `;
 
-            let mailtoUrl = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const urls = {
+                gmail: `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+                outlook: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+                yahoo: `https://compose.mail.yahoo.com/?to=${to}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+            };
 
-            switch(mailClient) {
-                case 'outlook':
-                    window.location.href = `ms-outlook:${mailtoUrl}`;
-                    break;
-                case 'thunderbird':
-                    window.location.href = `thunderbird:${mailtoUrl}`;
-                    break;
-                case 'gmail':
-                    window.location.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                    break;
-                default:
-                    window.location.href = mailtoUrl;
-            }
+            window.open(urls[mailClient], '_blank');
             return false;
         }
     </script>
