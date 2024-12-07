@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -55,20 +56,6 @@
         .client-select {
             margin-bottom: 20px;
         }
-        .checkbox-group {
-            margin-bottom: 15px;
-        }
-        .checkbox-group label {
-            display: inline-block;
-            font-weight: normal;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-        .checkbox-group input[type="radio"] {
-            width: auto;
-            margin-right: 5px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -102,18 +89,8 @@
                 <input type="date" id="dateFin" name="dateFin" required>
             </div>
             <div class="form-group">
-                <label>Type de congé :</label>
-                <div class="checkbox-group">
-                    <label>
-                        <input type="radio" name="motif" value="congé payé" required> Congé payé
-                    </label>
-                    <label>
-                        <input type="radio" name="motif" value="congé sans solde" required> Congé sans solde
-                    </label>
-                    <label>
-                        <input type="radio" name="motif" value="congé maladie" required> Congé maladie
-                    </label>
-                </div>
+                <label for="motif">Motif :</label>
+                <textarea id="motif" name="motif" rows="4" required placeholder="Détaillez le motif de votre demande de congés..."></textarea>
             </div>
             <button type="submit">Envoyer la demande</button>
         </form>
@@ -138,10 +115,10 @@
             const to = document.getElementById('to').value;
             const dateDebut = formatDate(document.getElementById('dateDebut').value);
             const dateFin = formatDate(document.getElementById('dateFin').value);
-            const motif = document.querySelector('input[name="motif"]:checked').value;
+            const motif = document.getElementById('motif').value;
 
             const subject = 'Demande de congés';
-            const body = `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nType de congé: ${motif}\n\nCordialement,\n${from}`;
+            const body = `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nMotif: ${motif}\n\nCordialement,\n${from}`;
 
             if (!confirm(`Confirmez-vous l'envoi de cet email ?\n\nSujet : ${subject}\n\n${body}`)) {
                 return false;
