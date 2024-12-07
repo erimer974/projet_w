@@ -26,7 +26,7 @@
             font-weight: bold;
             color: #333;
         }
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -34,7 +34,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(76,175,80,0.2);
@@ -52,11 +52,25 @@
         button:hover {
             background-color: #45a049;
         }
+        .client-select {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Demande de congés</h2>
+        
+        <div class="client-select">
+            <label for="mailClient">Service mail :</label>
+            <select id="mailClient" required>
+                <option value="">Sélectionnez votre service mail...</option>
+                <option value="gmail">Gmail</option>
+                <option value="outlook">Outlook Web</option>
+                <option value="yahoo">Yahoo Mail</option>
+            </select>
+        </div>
+
         <form id="congeForm" onsubmit="return sendEmail(event)">
             <div class="form-group">
                 <label for="from">Votre email :</label>
@@ -78,7 +92,7 @@
                 <label for="motif">Motif :</label>
                 <textarea id="motif" name="motif" rows="4" required placeholder="Détaillez le motif de votre demande de congés..."></textarea>
             </div>
-            <button type="submit">Envoyer via Outlook</button>
+            <button type="submit">Envoyer la demande</button>
         </form>
     </div>
 
@@ -91,6 +105,12 @@
         function sendEmail(e) {
             e.preventDefault();
             
+            const mailClient = document.getElementById('mailClient').value;
+            if (!mailClient) {
+                alert('Veuillez sélectionner un service mail');
+                return false;
+            }
+
             const from = document.getElementById('from').value;
             const to = document.getElementById('to').value;
             const dateDebut = formatDate(document.getElementById('dateDebut').value);
@@ -111,11 +131,23 @@ Motif: ${motif}
 Cordialement,
 ${from}`;
 
-            const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
+            const params = new URLSearchParams({
+                to: to,
+                subject: encodeURIComponent(subject),
+                body: encodeURIComponent(body)
+            });
+
+            const urls = {
+                gmail: `https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&${params.toString()}`,
+                outlook: `https://outlook.live.com/owa/?path=/mail/action/compose&${params.toString()}`,
+                yahoo: `https://compose.mail.yahoo.com/?${params.toString()}`
+            };
+
+            window.open(urls[mailClient], '_blank');
             return false;
         }
 
+        // Définir la date minimale comme aujourd'hui
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('dateDebut').min = today;
         document.getElementById('dateFin').min = today;
