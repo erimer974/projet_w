@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Demande de congés</title>
+    <title>Demande de congés spéciaux</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
             display: block;
             margin-bottom: 5px;
         }
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -29,10 +29,25 @@
             border: none;
             cursor: pointer;
         }
+        #mailClientSelect {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <h2>Demande de congés</h2>
+    
+    <div id="mailClientSelect">
+        <label for="mailClient">Choisissez votre client mail :</label>
+        <select id="mailClient" required>
+            <option value="">Sélectionnez...</option>
+            <option value="outlook">Outlook</option>
+            <option value="thunderbird">Thunderbird</option>
+            <option value="gmail">Gmail (navigateur)</option>
+            <option value="default">Client mail par défaut</option>
+        </select>
+    </div>
+
     <form id="congeForm" onsubmit="return sendEmail(event)">
         <div class="form-group">
             <label for="from">Votre email :</label>
@@ -61,13 +76,19 @@
         function sendEmail(e) {
             e.preventDefault();
             
+            const mailClient = document.getElementById('mailClient').value;
+            if (!mailClient) {
+                alert('Veuillez sélectionner un client mail');
+                return false;
+            }
+
             const from = document.getElementById('from').value;
             const to = document.getElementById('to').value;
             const dateDebut = document.getElementById('dateDebut').value;
             const dateFin = document.getElementById('dateFin').value;
             const motif = document.getElementById('motif').value;
 
-            const subject = 'Demande de congés';
+            const subject = 'Demande de congés spéciaux';
             const body = `
                 De: ${from}
                 Date de début: ${dateDebut}
@@ -75,7 +96,21 @@
                 Motif: ${motif}
             `;
 
-            window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            let mailtoUrl = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            switch(mailClient) {
+                case 'outlook':
+                    window.location.href = `ms-outlook:${mailtoUrl}`;
+                    break;
+                case 'thunderbird':
+                    window.location.href = `thunderbird:${mailtoUrl}`;
+                    break;
+                case 'gmail':
+                    window.location.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    break;
+                default:
+                    window.location.href = mailtoUrl;
+            }
             return false;
         }
     </script>
