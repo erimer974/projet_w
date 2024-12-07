@@ -66,8 +66,6 @@
             <select id="mailClient" required>
                 <option value="">Sélectionnez votre service mail...</option>
                 <option value="gmail">Gmail</option>
-                <option value="outlook_office365">Outlook Office 365</option>
-                <option value="yahoo">Yahoo Mail</option>
                 <option value="outlook_local">Outlook Local</option>
             </select>
         </div>
@@ -143,9 +141,7 @@ ${from}`;
                 });
 
                 const urls = {
-                    gmail: `https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&${params.toString()}`,
-                    outlook_office365: `https://outlook.office365.com/owa/?path=/mail/action/compose&${params.toString()}`,
-                    yahoo: `https://compose.mail.yahoo.com/?${params.toString()}`
+                    gmail: `https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&${params.toString()}`
                 };
 
                 window.open(urls[mailClient], '_blank');
