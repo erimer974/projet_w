@@ -70,7 +70,7 @@
             </select>
         </div>
 
-        <form id="congeForm" onsubmit="return sendEmail(event)">
+        <form id="congeForm" onsubmit="return confirmAndSend(event)">
             <div class="form-group">
                 <label for="from">Votre email :</label>
                 <input type="email" id="from" name="from" required placeholder="votre.email@exemple.com">
@@ -101,7 +101,7 @@
             return new Date(dateString).toLocaleDateString('fr-FR', options);
         }
 
-        function sendEmail(e) {
+        function confirmAndSend(e) {
             e.preventDefault();
             
             const mailClient = document.getElementById('mailClient').value;
@@ -117,34 +117,18 @@
             const motif = document.getElementById('motif').value;
 
             const subject = 'Demande de congés';
-            const body = `
-Bonjour,
+            const body = `Bonjour,\n\nJe souhaite poser des congés aux dates suivantes :\n\nDe: ${dateDebut}\nÀ: ${dateFin}\n\nMotif: ${motif}\n\nCordialement,\n${from}`;
 
-Je souhaite poser des congés aux dates suivantes :
-
-De: ${dateDebut}
-À: ${dateFin}
-
-Motif: ${motif}
-
-Cordialement,
-${from}`;
+            if (!confirm(`Confirmez-vous l'envoi de cet email ?\n\nSujet : ${subject}\n\n${body}`)) {
+                return false;
+            }
 
             if (mailClient === 'outlook_local') {
                 const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 window.location.href = mailtoLink;
-            } else {
-                const params = new URLSearchParams({
-                    to: to,
-                    subject: encodeURIComponent(subject),
-                    body: encodeURIComponent(body)
-                });
-
-                const urls = {
-                    gmail: `https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&${params.toString()}`
-                };
-
-                window.open(urls[mailClient], '_blank');
+            } else if (mailClient === 'gmail') {
+                const gmailLink = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(gmailLink, '_blank');
             }
 
             return false;
