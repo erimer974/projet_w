@@ -42,6 +42,9 @@
             cursor: pointer;
             width: 100%;
         }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -101,8 +104,8 @@ Motif: ${motif}
 Cordialement,
 ${from}`;
 
-            const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
+            const outlookLink = `ms-outlook:/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = outlookLink;
             return false;
         }
 
