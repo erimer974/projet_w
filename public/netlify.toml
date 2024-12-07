@@ -1,3 +1,0 @@
-[build]
-  functions = "netlify/functions" # Dossier contenant les fonctions
-  publish = "public"             # Dossier où se trouve le site (index.html)
